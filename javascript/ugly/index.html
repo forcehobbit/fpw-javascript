@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Functional Programming with Javascript</title>
+
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../util/test.css">
+    <script src="../../util/test.js"></script>
+</head>
+
+<body>
+<h1>Ugly</h1>
+
+<div id="outerscope"></div>
+<div id="functionscope"></div>
+<div id="blockscope"></div>
+<div id="nan"></div>
+<div id="this"></div>
+
+<script>
+    a = 1;          // implied global
+    var b = 2;      // global
+    let c = 3;      // block
+    const d = 4;    // block
+
+    const inFunctionA = function () {
+        return a;
+    };
+    const inFunctionB = function () {
+        return b;
+    };
+    const inFunctionC = function () {
+        return c;
+    };
+    const inFunctionD = function () {
+        return d;
+    };
+
+    test(document.querySelector('#outerscope'))('Outer Scope')(assert => {
+        assert.identical(a, 1);
+        assert.identical(b, 2);
+        assert.identical(c, 3);
+        assert.identical(d, 4);
+        assert.identical(inFunctionA(), 1);
+        assert.identical(inFunctionB(), 2);
+        assert.identical(inFunctionC(), 3);
+        assert.identical(inFunctionD(), 4);
+    });
+
+    const func = function () {
+        e = 1;
+        var f = 2;
+        let g = 3;
+        const h = 4;
+    }
+
+    test(document.querySelector('#functionscope'))('Function Scope')(assert => {
+        // assert.identical(e, 1);
+        // assert.identical(f, 2);
+        // assert.identical(g, 3);
+        // assert.identical(h, 4);
+    });
+
+    {
+        i = 1;
+        var j = 2;
+        let k = 3;
+        const l = 4;
+    }
+
+    for (let temp = 0; temp <= 10; ++temp) {
+        m = temp;
+        var n = temp;
+        let o = temp;
+        const p = temp;
+    }
+
+    test(document.querySelector('#blockscope'))('Block Scope')(assert => {
+        assert.identical(i, 1);
+        assert.identical(j, 2);
+        // assert.identical(k, 3);
+        // assert.identical(l, 4);
+        assert.identical(m, 10);
+        assert.identical(n, 10);
+        //assert.identical(o, 10);
+        //assert.identical(p, 10);
+    });
+
+    // example, extending Number prototype
+    Number.prototype.isNumber = function () {
+        const value = typeof this.valueOf()
+        return value === 'number' && isFinite(value);
+    }
+
+    // example function
+    const isNumber = function (value) {
+        return typeof value === 'number' && isFinite(value);
+    }
+
+    test(document.querySelector('#nan'))('NaN')(assert => {
+        assert.typeOf(NaN, 'number');
+        assert.identical(NaN, NaN);
+        assert.identical(isNaN(NaN), true);
+        assert.identical(isNaN(0), false);
+        assert.identical(isNaN('something'), true);
+        assert.identical(isNaN('0'), false);
+        assert.identical(isNumber(NaN), false);
+        assert.identical(isNumber(Infinity), false);
+    });
+
+    const thisObject = {
+        whoami: this,                   // binds to owner (window)
+        regularFunc: function () {
+            return this;                // binds to owner (thisObject)
+        },
+        arrowFunc: () => {
+            return this;                // inherits from parent (window)
+        }
+    }
+
+    let thisReguarFunc = thisObject.regularFunc;  // binds to owner (window)
+    let thisArrowFunc = thisObject.arrowFunc;     // inherits from parent (still window)
+
+    const ConstructorObject = function () {
+        this.whoami = this;                 // binds to owner (constructedObject)
+        this.regularFunc = function () {
+            return this;                    // binds to owner (constructedObject)
+        }
+        this.arrowFunc = () => {
+            return this;                    // inherits from parent (constructedObject)
+        }
+    }
+
+    const newConstructedObject = new ConstructorObject();   // correctly constructed
+    const functionCallObject = ConstructorObject();         // no warning!
+
+    let thisConstructedRegularFunc = newConstructedObject.regularFunc;   // binds to owner (window)
+    let thisConstructedArrowFunc = newConstructedObject.arrowFunc;       // inherits from parent (constructedObject)
+
+    const thisTest = test(document.querySelector('#this'))('this');
+    thisTest(assert => {
+        assert.identical(this, window);
+
+        assert.identical(thisObject.whoami, window);
+        assert.identical(thisObject.regularFunc(), thisObject);
+        assert.identical(thisObject.arrowFunc(), window);
+        assert.identical(thisReguarFunc(), window);
+        assert.identical(thisArrowFunc(), window);
+
+        assert.identical(newConstructedObject.whoami, newConstructedObject);
+        assert.identical(newConstructedObject.regularFunc(), newConstructedObject);
+        assert.identical(newConstructedObject.arrowFunc(), newConstructedObject);
+        assert.identical(thisConstructedRegularFunc(), window);
+        assert.identical(thisConstructedArrowFunc(), newConstructedObject);
+
+        assert.identical(functionCallObject, undefined);
+        assert.identical(window.whoami, window);
+        assert.identical(window.regularFunc(), window);
+        assert.identical(window.arrowFunc(), window);
+    });
+
+    thisReguarFunc = thisObject.regularFunc.bind(thisObject);  // binds to owner (window)
+    thisArrowFunc = thisObject.arrowFunc.bind(thisObject);     // inherits from parent (still window)
+    thisConstructedRegularFunc = newConstructedObject.regularFunc.bind(newConstructedObject);   // binds to owner (window)
+    thisConstructedArrowFunc = newConstructedObject.arrowFunc.bind(newConstructedObject);       // inherits from parent (constructedObject)
+
+    thisTest(assert => {
+        assert.identical(thisReguarFunc(), thisObject);
+        assert.identical(thisArrowFunc(), window);
+        assert.identical(thisConstructedRegularFunc(), newConstructedObject);
+        assert.identical(thisConstructedArrowFunc(), newConstructedObject);
+    });
+</script>
+</body>
+
+</html>

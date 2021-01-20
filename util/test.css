@@ -1,0 +1,24 @@
+[class^='test-'] {
+    font-family: monospace;
+}
+
+.test-title {
+    padding-top: 1em;
+    font-size: 2em;
+}
+
+.test-summary {
+    padding-top: 1em;
+}
+
+.test-results {
+    padding-top: 1em;
+}
+
+.test-results .test-success {
+    color: green;
+}
+
+.test-results .test-fail {
+    color: red;
+}

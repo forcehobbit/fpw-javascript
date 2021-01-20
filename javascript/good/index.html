@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Functional Programming with Javascript</title>
+
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../util/test.css">
+    <script src="../../util/test.js"></script>
+</head>
+
+<body>
+<h1>Good</h1>
+
+<div id="closures"></div>
+
+<script>
+    const outerFunction = (a) => {
+        const components = {
+            a
+        }
+
+        return (b) => { // closure
+            components.b = b;
+            components.result = a + b;
+            return components;
+        };
+    }
+
+    const one = outerFunction(1);
+    const max = outerFunction('Max');
+
+    test(document.querySelector('#closures'))('Functions / Closures / Object Literals / Dynamic / Loose Typing')(assert => {
+        assert.identical(typeof outerFunction, 'function');
+        assert.identical(typeof outerFunction(1), 'function');
+        assert.identical(one(2).a, 1);
+        assert.identical(one(2).b, 2);
+        assert.identical(one(2).result, 3);
+        assert.identical(max(' Mustermann').a, 'Max');
+        assert.identical(max(' Mustermann').b, ' Mustermann');
+        assert.identical(max(' Mustermann').result, 'Max Mustermann');
+    })
+</script>
+</body>
+
+</html>

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Functional Programming with Javascript</title>
+
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../util/test.css">
+    <script src="../../util/test.js"></script>
+    <script src="../../util/church.js"></script>
+</head>
+
+<body>
+<h1>Combinators</h1>
+
+<div id="combinators"></div>
+<div id="observable"></div>
+<div>
+    <ul id="list"></ul>
+    <button id="list-button">Add Random</button>
+</div>
+
+<script>
+    Function.prototype.toJsBool = function () {
+        return this(true)(false);
+    }
+
+    const True = K;                             // is a function which takes two arguments and returns the first argument.
+    const False = KI;                           // is a function which takes two arguments and returns the second argument.
+    const Not = C;                              // is a function which takes another function, who has 2 arguments, and flips those arguments
+    const Or = M;                               // takes a function and applies it to itself
+    const IfThenElse = I;                       // takes 3 arguments, a Boolean and the two if then else results.
+    const And = (p) => (q) => p(q)(p);          // takes 2 boolean values and returns True if both of those values are True
+    const Equals = (p) => (q) => p(q)(Not(q));  // takes 2 boolean values and returns True if both of those values are the same.
+
+    test(document.querySelector('#combinators'))('Combinators')(assert => {
+        // true & false
+        assert.identical(true, True.toJsBool());
+        assert.identical(false, False.toJsBool());
+
+        // not
+        assert.identical(false, Not(True).toJsBool());
+        assert.identical(true, Not(False).toJsBool());
+
+        // or
+        assert.identical(false, Or(False)(False).toJsBool())    // False(False)(False)  => returns the second arg = False
+        assert.identical(true, Or(True)(False).toJsBool())      // True(True)(False)    => returns the first arg = True
+        assert.identical(true, Or(False)(True).toJsBool())      // False(False)(True)   => returns the second arg = True
+        assert.identical(true, Or(True)(True).toJsBool())       // True(True)(True)     => returns the first arg = True
+
+        // if then else
+        assert.identical('A', IfThenElse(True)('A')('B'))
+        assert.identical('B', IfThenElse(False)('A')('B'))
+
+        // and
+        assert.identical(false, And(False)(False).toJsBool())   // False(False)(False)  => returns the second arg = False
+        assert.identical(false, And(True)(False).toJsBool())    // True(False)(True)    => returns the first arg = False
+        assert.identical(false, And(False)(True).toJsBool())    // False(True)(False)   => returns the second arg = False
+        assert.identical(true, And(True)(True).toJsBool())      // True(True)(True)     => returns the first arg = True
+
+        // equals
+        assert.identical(true, Equals(False)(False).toJsBool())
+        assert.identical(false, Equals(True)(False).toJsBool())
+        assert.identical(false, Equals(False)(True).toJsBool())
+        assert.identical(true, Equals(True)(True).toJsBool())
+    });
+
+    const Observable = (value) => {
+        const observers = [];
+
+        return {
+            onChange: (observer) => {
+                observers.push(observer)
+            },
+            setValue: (newValue) => {
+                const oldValue = value;
+                value = newValue;
+                observers.forEach(observer => {
+                    observer(newValue, oldValue);
+                })
+            },
+            getValue: () => {
+                return value;
+            }
+        }
+    }
+
+    const myObservable = Observable(0);
+
+    myObservable.onChange((newValue, oldValue) => {
+        test(document.querySelector('#observable'))('Observable')(assert => {
+            assert.identical(true, newValue === myObservable.getValue());
+            assert.identical(newValue, oldValue + 1);
+        });
+    });
+
+    myObservable.setValue(1);
+    myObservable.setValue(2);
+    myObservable.setValue(3);
+
+    const addition = (x) => (y) => x + y;
+    console.log(C(addition)(' World')('Hello')); // Hello World
+
+
+    //////////
+    /**
+     * @param {[]} list
+     * @returns ObservableList
+     */
+    const ObservableList = (list) => {
+        const addListeners = [];
+        const delListeners = [];
+
+        const removeAt = (array) => (index) => array.splice(index, 1);
+        const removeItem = (array) => (item) => {
+            const i = array.indexOf(item);
+            if (i >= 0) removeAt(array)(i);
+        };
+        const listRemoveItem = removeItem(list);
+        const delListenersRemove = removeAt(delListeners);
+
+        const add = (item) => {
+            list.push(item);
+            addListeners.forEach(listener => listener(item));
+            return item;
+        };
+
+        const del = (item) => {
+            listRemoveItem(item);
+            const safeIterate = [...delListeners]; // shallow copy as we might change listeners array while iterating
+            safeIterate.forEach((listener, index) => listener(item, () => delListenersRemove(index)));
+            console.log({delListeners})
+        };
+
+        /**
+         * @typedef {{
+         *   onAdd: function(*): number,
+         *   onDel: function(*): number,
+         *   add: function(*): *,
+         *   del: function(*),
+         * }} ObservableList
+         */
+        return {
+            onAdd: (listener) => addListeners.push(listener),
+            onDel: (listener) => delListeners.push(listener),
+            add: add,
+            del: del,
+            removeAddListener: removeItem(addListeners),
+            removeDeleteListener: removeItem(delListeners),
+        }
+    };
+
+    const myList = [];
+    const myObservableList = ObservableList(myList);
+    const listDomElement = document.querySelector('#list');
+    const renderList = () => {
+        listDomElement.innerHTML = '';
+        myList.forEach(entry => {
+            listDomElement.appendChild(entry);
+        })
+    }
+    renderList();
+
+    myObservableList.onAdd((value) => {
+        renderList();
+        console.log(`${value} added`);
+    })
+
+    myObservableList.onDel((value) => {
+        myObservableList.removeDeleteListener(value);
+        renderList();
+        console.log(`${value} removed`);
+    })
+
+    const listButton = document.querySelector('#list-button');
+    listButton.onclick = () => {
+        const wrapper = document.createElement('DIV');
+        wrapper.innerHTML = `<li>${Math.random()}</li><button>&times;</button>`
+        myObservableList.add(wrapper);
+
+        const [li, removeButton] = wrapper.children;
+        li.innerText = Math.random();
+
+        removeButton.onclick = () => {
+            myObservableList.del(wrapper);
+        }
+    }
+</script>
+</body>
+
+</html>

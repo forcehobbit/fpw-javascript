@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Functional Programming with Javascript</title>
+
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../util/test.css">
+    <script src="../../util/test.js"></script>
+</head>
+
+<body>
+<h1>Bad</h1>
+
+<div id="equality"></div>
+<div id="identical"></div>
+<div id="block"></div>
+<div id="switch"></div>
+
+<script>
+    test(document.querySelector('#equality'))('Equal (==)')(assert => {
+        assert.equals('', '0');             // false
+        assert.equals(0, '');               // true
+        assert.equals(0, '0');              // true
+        assert.equals(false, 'false');      // false
+        assert.equals(false, '0');          // true
+        assert.equals(false, undefined);    // false
+        assert.equals(false, null);         // false
+        assert.equals(null, undefined);     // true
+        assert.equals(' \t\r\n ', 0);       // true
+    })
+
+    test(document.querySelector('#identical'))('Identical (===)')(assert => {
+        assert.identical('', '0');             // false
+        assert.identical(0, '');               // true
+        assert.identical(0, '0');              // true
+        assert.identical(false, 'false');      // false
+        assert.identical(false, '0');          // true
+        assert.identical(false, undefined);    // false
+        assert.identical(false, null);         // false
+        assert.identical(null, undefined);     // true
+        assert.identical(' \t\r\n ', 0);       // true
+    })
+
+    let blockTestElement;
+    const blockTest = test(document.querySelector('#block'))('Block-less Statements')
+
+    blockTest(assert => {
+        assert.identical(blockTestElement, undefined);
+    })
+
+    if (false)
+        console.log('ok')
+        blockTestElement = 'bad';
+
+    blockTest(assert => {
+        assert.identical(blockTestElement, 'bad');
+    })
+
+    const aSwitch = 'aSwitch'
+    let switchResult = undefined;
+    switch (aSwitch) {
+        case 'aSwitch':
+            switchResult = 'a'
+        case 'bSwitch':
+            switchResult = 'b'
+        case 'cSwitch':
+            switchResult = 'c'
+    }
+
+    test(document.querySelector('#switch'))('switch Fall Through')(assert => {
+        assert.identical(switchResult, 'c')
+    })
+</script>
+</body>
+
+</html>
