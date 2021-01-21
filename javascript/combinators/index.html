@@ -103,12 +103,6 @@
     const addition = (x) => (y) => x + y;
     console.log(C(addition)(' World')('Hello')); // Hello World
 
-
-    //////////
-    /**
-     * @param {[]} list
-     * @returns ObservableList
-     */
     const ObservableList = (list) => {
         const addListeners = [];
         const delListeners = [];
@@ -134,14 +128,6 @@
             console.log({delListeners})
         };
 
-        /**
-         * @typedef {{
-         *   onAdd: function(*): number,
-         *   onDel: function(*): number,
-         *   add: function(*): *,
-         *   del: function(*),
-         * }} ObservableList
-         */
         return {
             onAdd: (listener) => addListeners.push(listener),
             onDel: (listener) => delListeners.push(listener),

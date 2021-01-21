@@ -9,7 +9,7 @@ export const Observable = (value) => {
      * @typedef {{
      *   getValue: (function(): *),
      *   onChange: (function(function(*,*))),
-     *   setValue: (function(*): (undefined))
+     *   setValue: (function(*): undefined)
      * }} Observable
      */
     return {

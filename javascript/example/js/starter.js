@@ -1,8 +1,5 @@
-import ListView from "./list-view.js";
-import DetailView from "./detail-view.js";
+import ListView from './listView.js';
+import DetailView from './detailView.js';
 
-const masterRoot = document.querySelector('#master');
-const detailRoot = document.querySelector('#detail');
-
-ListView(masterRoot);
-DetailView(detailRoot);
+ListView(document.querySelector('#list'));
+DetailView(document.querySelector('#detail'));

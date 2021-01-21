@@ -1,23 +1,32 @@
 [
   {
+    "id": "1",
     "lastname": "Müller",
-    "firstname": "Dieter"
+    "firstname": "Dieter",
+    "imageUrl": "images/dieter.jpg"
   },
   {
+    "id": "2",
     "lastname": "Schmidt",
-    "firstname": "Eberhard"
+    "firstname": "Eberhard",
+    "imageUrl": "images/eberhard.jpg"
   },
   {
+    "id": "3",
     "lastname": "Schneider",
-    "firstname": "Emma"
+    "firstname": "Emma",
+    "imageUrl": "images/emma.jpg"
   },
   {
+    "id": "4",
     "lastname": "Fischer",
-    "firstname": "Heidi"
-
+    "firstname": "Heidi",
+    "imageUrl": "images/heidi.jpg"
   },
   {
+    "id": "5",
     "lastname": "Weber",
-    "firstname": "Lukas"
+    "firstname": "Lukas",
+    "imageUrl": "images/lukas.jpg"
   }
 ]
