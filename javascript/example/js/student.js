@@ -1,4 +1,4 @@
-import {Observable} from '../../../util/observable.js';
+import {Observable} from '../util/observable.js';
 
 /**
  * @param {string} id

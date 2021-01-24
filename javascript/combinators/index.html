@@ -51,8 +51,8 @@
         assert.identical(true, Or(True)(True).toJsBool())       // True(True)(True)     => returns the first arg = True
 
         // if then else
-        assert.identical('A', IfThenElse(True)('A')('B'))
-        assert.identical('B', IfThenElse(False)('A')('B'))
+        assert.identical('A', IfThenElse(True)('A')('B'))       // True('A')('B')  => returns the first arg = 'A'
+        assert.identical('B', IfThenElse(False)('A')('B'))      // False('A')('B')  => returns the second arg = 'B'
 
         // and
         assert.identical(false, And(False)(False).toJsBool())   // False(False)(False)  => returns the second arg = False
@@ -62,9 +62,31 @@
 
         // equals
         assert.identical(true, Equals(False)(False).toJsBool())
+        // assert.identical(true, False(False)(Not(False)).toJsBool())
+        // assert.identical(true, False(False)((a) => (b) => False(b)(a)).toJsBool())
+        // assert.identical(true, False(a => b => b)(a => b => (x => y => y)(b)(a))(true)(false))
+        // assert.identical(true, (a => b => (x => y => y)(b)(a))(true)(false))
+
         assert.identical(false, Equals(True)(False).toJsBool())
+        // assert.identical(false, True(False)(Not(False)).toJsBool())
+        // assert.identical(false, True(False)(a => b => False(b)(a)).toJsBool())
+        // assert.identical(false, True(False)(a => b => False(b)(a))(true)(false))
+        // assert.identical(false, True(a => b => b)(a => b => (x => y => y)(b)(a))(true)(false))
+        // assert.identical(false, (a => b => b)(true)(false))
+
         assert.identical(false, Equals(False)(True).toJsBool())
+        // assert.identical(false, False(True)(Not(True)).toJsBool())
+        // assert.identical(false, False(True)(a => b => True(b)(a)).toJsBool())
+        // assert.identical(false, False(True)(a => b => True(b)(a))(true)(false))
+        // assert.identical(false, False(a => b => a)(a => b => (x => y => x)(b)(a))(true)(false))
+        // assert.identical(false, (a => b => (x => y => x)(b)(a))(true)(false))
+
         assert.identical(true, Equals(True)(True).toJsBool())
+        // assert.identical(true, True(True)(Not(True)).toJsBool())
+        // assert.identical(true, True(True)(a => b => True(b)(a)).toJsBool())
+        // assert.identical(true, True(True)(a => b => True(b)(a))(true)(false))
+        // assert.identical(true, True(a => b => a)(a => b => (x => y => x)(b)(a))(true)(false))
+        // assert.identical(true, (a => b => a)(true)(false))
     });
 
     const Observable = (value) => {

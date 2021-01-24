@@ -1,5 +1,5 @@
 import {Student} from './student.js';
-import {Observable, ObservableList} from '../../../util/observable.js';
+import {Observable, ObservableList} from '../util/observable.js';
 
 /**
  * @returns SelectionController
@@ -33,7 +33,7 @@ const ListController = () => {
                 json.forEach(student => modelObsList.add(Student(student)));
                 isLoading.setValue(false);
             }
-            setTimeout(handle, Math.random() * 1000)
+            setTimeout(handle, Math.random() * 2000)
         });
 
     /**
