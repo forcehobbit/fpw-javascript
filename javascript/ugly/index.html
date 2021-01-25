@@ -121,8 +121,22 @@
         }
     }
 
+    const thisTest = test(document.querySelector('#this'))('this');
+    thisTest(assert => {
+        assert.identical(this, window);
+
+        assert.identical(thisObject.whoami, window);
+        assert.identical(thisObject.regularFunc(), thisObject);
+        assert.identical(thisObject.arrowFunc(), window);
+    });
+
     let thisReguarFunc = thisObject.regularFunc;  // binds to owner (window)
     let thisArrowFunc = thisObject.arrowFunc;     // inherits from parent (still window)
+
+    thisTest(assert => {
+        assert.identical(thisReguarFunc(), window);
+        assert.identical(thisArrowFunc(), window);
+    });
 
     const ConstructorObject = function () {
         this.whoami = this;                 // binds to owner (constructedObject)
@@ -140,16 +154,7 @@
     let thisConstructedRegularFunc = newConstructedObject.regularFunc;   // binds to owner (window)
     let thisConstructedArrowFunc = newConstructedObject.arrowFunc;       // inherits from parent (constructedObject)
 
-    const thisTest = test(document.querySelector('#this'))('this');
     thisTest(assert => {
-        assert.identical(this, window);
-
-        assert.identical(thisObject.whoami, window);
-        assert.identical(thisObject.regularFunc(), thisObject);
-        assert.identical(thisObject.arrowFunc(), window);
-        assert.identical(thisReguarFunc(), window);
-        assert.identical(thisArrowFunc(), window);
-
         assert.identical(newConstructedObject.whoami, newConstructedObject);
         assert.identical(newConstructedObject.regularFunc(), newConstructedObject);
         assert.identical(newConstructedObject.arrowFunc(), newConstructedObject);
