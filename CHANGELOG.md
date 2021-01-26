@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.2.1] 2020-01-24
+- Updated presentation
+- Updated list / detail example
+
 ## [1.2.0] 2020-01-24
 - Added an express server configuration to the list / detail code example
 - Updated presentation

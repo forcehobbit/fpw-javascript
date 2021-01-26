@@ -89,23 +89,19 @@
         // assert.identical(true, (a => b => a)(true)(false))
     });
 
-    const Observable = (value) => {
+    const Observable = value => {
         const observers = [];
 
         return {
-            onChange: (observer) => {
-                observers.push(observer)
-            },
-            setValue: (newValue) => {
+            onChange: observer => observers.push(observer),
+            setValue: newValue => {
                 const oldValue = value;
                 value = newValue;
-                observers.forEach(observer => {
-                    observer(newValue, oldValue);
-                })
+                observers.forEach(
+                    observer => observer(newValue, oldValue)
+                )
             },
-            getValue: () => {
-                return value;
-            }
+            getValue: () => value
         }
     }
 
@@ -125,34 +121,33 @@
     const addition = (x) => (y) => x + y;
     console.log(C(addition)(' World')('Hello')); // Hello World
 
-    const ObservableList = (list) => {
+    const ObservableList = list => {
         const addListeners = [];
         const delListeners = [];
 
-        const removeAt = (array) => (index) => array.splice(index, 1);
-        const removeItem = (array) => (item) => {
+        const removeAt = array => index => array.splice(index, 1);
+        const removeItem = array => item => {
             const i = array.indexOf(item);
             if (i >= 0) removeAt(array)(i);
         };
         const listRemoveItem = removeItem(list);
         const delListenersRemove = removeAt(delListeners);
 
-        const add = (item) => {
+        const add = item => {
             list.push(item);
             addListeners.forEach(listener => listener(item));
             return item;
         };
 
-        const del = (item) => {
+        const del = item => {
             listRemoveItem(item);
             const safeIterate = [...delListeners]; // shallow copy as we might change listeners array while iterating
             safeIterate.forEach((listener, index) => listener(item, () => delListenersRemove(index)));
-            console.log({delListeners})
         };
 
         return {
-            onAdd: (listener) => addListeners.push(listener),
-            onDel: (listener) => delListeners.push(listener),
+            onAdd: listener => addListeners.push(listener),
+            onDel: listener => delListeners.push(listener),
             add: add,
             del: del,
             removeAddListener: removeItem(addListeners),
@@ -189,7 +184,6 @@
         myObservableList.add(wrapper);
 
         const [li, removeButton] = wrapper.children;
-        li.innerText = Math.random();
 
         removeButton.onclick = () => {
             myObservableList.del(wrapper);

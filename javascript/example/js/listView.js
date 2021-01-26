@@ -94,6 +94,7 @@ const listProjector = (action, root, model) => {
             handleAdd(root, model);
             break;
         case DELETE:
+            selectionController.setSelectedModel(undefined);
             handleDelete(model);
             break;
     }

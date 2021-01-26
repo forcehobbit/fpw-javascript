@@ -67,9 +67,6 @@ const detailProjector = (root, model) => {
 const DetailView = (root) => {
     const render = model => detailProjector(root, model);
     selectionController.onModelSelected(render);
-    listController.onStudentsDel(() => {
-        selectionController.setSelectedModel(undefined);
-    })
 }
 
 export default DetailView;
