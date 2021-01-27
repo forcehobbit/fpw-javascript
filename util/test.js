@@ -21,7 +21,7 @@ const Assert = () => {
         const result = (actual == expected);
         ok.push({
             result,
-            message: `${stringDecoration(actual)} === ${stringDecoration(expected)}: ${stringDecoration(result)}`
+            message: `${stringDecoration(actual)} == ${stringDecoration(expected)}: ${stringDecoration(result)}`
         });
     }
 

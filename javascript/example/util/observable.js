@@ -15,9 +15,7 @@ export const Observable = (value) => {
     return {
         onChange: (observer) => {
             listeners.push(observer)
-            listeners.forEach(observer => {
-                observer(value, undefined);
-            })
+            observer(value, undefined);
         },
         setValue: (newValue) => {
             const oldValue = value;
