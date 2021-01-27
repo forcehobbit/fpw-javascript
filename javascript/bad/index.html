@@ -34,14 +34,14 @@
 
     test(document.querySelector('#identical'))('Identical (===)')(assert => {
         assert.identical('', '0');             // false
-        assert.identical(0, '');               // true
-        assert.identical(0, '0');              // true
+        assert.identical(0, '');               // false
+        assert.identical(0, '0');              // false
         assert.identical(false, 'false');      // false
-        assert.identical(false, '0');          // true
+        assert.identical(false, '0');          // false
         assert.identical(false, undefined);    // false
         assert.identical(false, null);         // false
-        assert.identical(null, undefined);     // true
-        assert.identical(' \t\r\n ', 0);       // true
+        assert.identical(null, undefined);     // false
+        assert.identical(' \t\r\n ', 0);       // false
     })
 
     let blockTestElement;
